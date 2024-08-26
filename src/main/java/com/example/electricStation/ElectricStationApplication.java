@@ -8,6 +8,8 @@ public class ElectricStationApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ElectricStationApplication.class, args);
+
+		// branch test
 	}
 
 }
