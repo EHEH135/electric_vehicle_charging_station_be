@@ -1,8 +1,10 @@
 package com.example.electricStation.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 public class ElectricStation {
@@ -19,19 +21,20 @@ public class ElectricStation {
     private LocalDateTime statUpdateDatetime; // 상태 업데이트 시간
 
     // Static factory method
-    public static ElectricStation of(String addr, Long chargeTp, Long cpId, String cpNm, Long cpStat, Long cpTp, Long csId, String csNm, double lat, double longi, LocalDateTime statUpdateDatetime) {
+    public static ElectricStation of(JsonNode item) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         ElectricStation station = new ElectricStation();
-        station.setAddr(addr);
-        station.setChargeTp(chargeTp);
-        station.setCpId(cpId);
-        station.setCpNm(cpNm);
-        station.setCpStat(cpStat);
-        station.setCpTp(cpTp);
-        station.setCsId(csId);
-        station.setCsNm(csNm);
-        station.setLat(lat);
-        station.setLongi(longi);
-        station.setStatUpdateDatetime(statUpdateDatetime);
+        station.setAddr(item.path("addr").asText());
+        station.setChargeTp(item.path("chargeTp").asLong());
+        station.setCpId(item.path("cpId").asLong());
+        station.setCpNm(item.path("cpNm").asText());
+        station.setCpStat(item.path("cpStat").asLong());
+        station.setCpTp(item.path("cpTp").asLong());
+        station.setCsId(item.path("csId").asLong());
+        station.setCsNm(item.path("csNm").asText());
+        station.setLat(item.path("lat").asDouble());
+        station.setLongi(item.path("longi").asDouble());
+        station.setStatUpdateDatetime(LocalDateTime.parse(item.path("statUpdateDatetime").asText(), formatter));
         return station;
     }
 }
