@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class ElecStationServiceImpl implements ElecStationService {
     private static final String BASE_URL = "http://openapi.kepco.co.kr/service/EvInfoServiceV2/getEvSearchList";
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private static List<ElectricStation> electricStations;
+    private static final List<ElectricStation> electricStations = new CopyOnWriteArrayList<>();
 
 
     @Override
@@ -50,12 +51,14 @@ public class ElecStationServiceImpl implements ElecStationService {
     public List<ElectricStation> getElectricStationsFromJson(JsonNode jsonResponse) {
         // Navigate to the "item" array in the JSON response
         JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
-        electricStations = new ArrayList<>();
+        electricStations.clear();
 
         if (items.isArray()) {
-            return electricStations = StreamSupport.stream(items.spliterator(), false)
+            electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
                     .map(ElectricStation::of)
-                    .toList();
+                    .toList());
+
+            return electricStations;
         } else {
             throw new IllegalStateException("Server Error");
         }
