@@ -38,6 +38,12 @@ public class ElecStationController {
         return commonResponseService.getListResponse(electricStations);
     }
 
+    @GetMapping("/details")
+    public ListResponse<ElectricStation> details(@RequestParam Long csId) {
+        List<ElectricStation> stationDetails = elecStationService.getElectricStationsByCsId(csId);
+        return commonResponseService.getListResponse(stationDetails);
+    }
+
     @PostMapping("/{stationId}/favorites")
     public SingleResponse<ElecStationResponseDto> setFavorite(@PathVariable Long stationId) {
         // todo Principal 방식으로 현재 사용자 정보 가져오기
