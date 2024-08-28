@@ -30,6 +30,8 @@ public class ElecStationServiceImpl implements ElecStationService {
     private static final String BASE_URL = "http://openapi.kepco.co.kr/service/EvInfoServiceV2/getEvSearchList";
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private static List<ElectricStation> electricStations;
+
 
     @Override
     public JsonNode getElecStation(String location) {
@@ -48,14 +50,21 @@ public class ElecStationServiceImpl implements ElecStationService {
     public List<ElectricStation> getElectricStationsFromJson(JsonNode jsonResponse) {
         // Navigate to the "item" array in the JSON response
         JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
+        electricStations = new ArrayList<>();
 
         if (items.isArray()) {
-            return StreamSupport.stream(items.spliterator(), false)
+            return electricStations = StreamSupport.stream(items.spliterator(), false)
                     .map(ElectricStation::of)
                     .toList();
         } else {
             throw new IllegalStateException("Server Error");
         }
+    }
+
+    public List<ElectricStation> getElectricStationsByCsId(Long csId) {
+        return electricStations.stream()
+                .filter(station -> station.getCsId().equals(csId))
+                .toList();
     }
 
 }

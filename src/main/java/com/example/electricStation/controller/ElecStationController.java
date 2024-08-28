@@ -33,4 +33,10 @@ public class ElecStationController {
 
         return commonResponseService.getListResponse(electricStations);
     }
+
+    @GetMapping("/details")
+    public ListResponse<ElectricStation> details(@RequestParam Long csId) {
+        List<ElectricStation> stationDetails = elecStationService.getElectricStationsByCsId(csId);
+        return commonResponseService.getListResponse(stationDetails);
+    }
 }

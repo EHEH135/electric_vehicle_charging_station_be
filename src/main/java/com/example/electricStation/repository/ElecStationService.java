@@ -11,5 +11,5 @@ public interface ElecStationService {
 
     public JsonNode getElecStation(String location);
     public List<ElectricStation> getElectricStationsFromJson(JsonNode jsonResponse);
-//    public String getElecStation(String location);
+    public List<ElectricStation> getElectricStationsByCsId(Long csId);
 }
