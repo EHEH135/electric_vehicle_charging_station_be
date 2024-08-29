@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Api Key ###
+application-api.properties
