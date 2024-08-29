@@ -15,4 +15,5 @@ import lombok.Setter;
 public class ElecStationResponseDto {
 
     private Long csId;
+    private String addr;
 }

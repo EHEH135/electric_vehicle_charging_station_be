@@ -8,12 +8,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
@@ -32,3 +39,5 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<Favorites> favoritesList = new ArrayList<>();
 }
+
+

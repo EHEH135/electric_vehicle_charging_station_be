@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
@@ -33,6 +33,7 @@ public class ElecStationServiceImpl implements ElecStationService {
     private final ObjectMapper objectMapper;
     private final FavoritesRepository favoritesRepository;
     private final UserRepository userRepository;
+    private static final List<ElectricStation> electricStations = new CopyOnWriteArrayList<>();
 
     @Override
     public JsonNode getElecStation(String location) {
@@ -51,19 +52,29 @@ public class ElecStationServiceImpl implements ElecStationService {
     public List<ElectricStation> getElectricStationsFromJson(JsonNode jsonResponse) {
         // Navigate to the "item" array in the JSON response
         JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
+        electricStations.clear();
 
         if (items.isArray()) {
-            return StreamSupport.stream(items.spliterator(), false)
+            electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
                     .map(ElectricStation::of)
-                    .toList();
+                    .toList());
+
+            return electricStations;
         } else {
             throw new IllegalStateException("Server Error");
         }
     }
 
     @Override
+    public List<ElectricStation> getElectricStationsByCsId(Long csId) {
+        return electricStations.stream()
+                .filter(station -> station.getCsId().equals(csId))
+                .toList();
+    }
+
+    @Override
     public ElecStationResponseDto setFavorite(Long stationId, String userName) {
-        // todo: 존재하는 stationId인지 validation 로직 추가
+        ElectricStation findStation = validateStationId(stationId);
 
         User findUser = validateUser(userName);
 
@@ -71,23 +82,26 @@ public class ElecStationServiceImpl implements ElecStationService {
         if(findFavorites != null) {
             return ElecStationResponseDto.builder()
                     .csId(findFavorites.getStationId())
+                    .addr(findFavorites.getAddr())
                     .build();
         }
 
         Favorites favorites = Favorites.builder()
                 .user(findUser)
                 .stationId(stationId)
+                .addr(findStation.getAddr())
                 .build();
 
-        favoritesRepository.save(favorites);
+        Favorites savedFavorites = favoritesRepository.save(favorites);
         return ElecStationResponseDto.builder()
-                .csId(stationId)
+                .csId(savedFavorites.getStationId())
+                .addr(savedFavorites.getAddr())
                 .build();
     }
 
     @Override
     public ElecStationResponseDto deleteFavorite(Long stationId, String userName) {
-        // todo: 존재하는 stationId인지 validation 로직 추가
+        ElectricStation findStation = validateStationId(stationId);
 
         User findUser = validateUser(userName);
         Favorites findFavorites = validateFavorite(stationId, findUser);
@@ -99,7 +113,15 @@ public class ElecStationServiceImpl implements ElecStationService {
 
         return ElecStationResponseDto.builder()
                 .csId(stationId)
+                .addr(findStation.getAddr())
                 .build();
+    }
+
+    private ElectricStation validateStationId(Long stationId) {
+        return electricStations.stream()
+                .filter(station -> station.getCsId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Station Not Found"));
     }
 
     private Favorites validateFavorite(Long stationId, User findUser) {
