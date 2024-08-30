@@ -32,8 +32,8 @@ public class ElecStationController {
         if(location == null){
             location = "서울특별시 중구";
         }
-        JsonNode elecStation = elecStationService.getElecStation(location);
-        List<ElectricStation> electricStations = elecStationService.getElectricStationsFromJson(elecStation);
+        List<ElectricStation> electricStations = elecStationService.getElecStation(location);
+//        List<ElectricStation> electricStations = elecStationService.getElectricStationsFromJson(elecStation);
 
         return commonResponseService.getListResponse(electricStations);
     }

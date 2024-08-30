@@ -1,9 +1,11 @@
 package com.example.electricStation.service.impl;
 
+import com.example.electricStation.common.CommonResponseService;
 import com.example.electricStation.dto.ElecStationResponseDto;
 import com.example.electricStation.dto.ElectricStation;
 import com.example.electricStation.entity.Favorites;
 import com.example.electricStation.entity.User;
+import com.example.electricStation.exception.LocationException;
 import com.example.electricStation.exception.NotFoundException;
 import com.example.electricStation.repository.FavoritesRepository;
 import com.example.electricStation.repository.UserRepository;
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,40 +36,40 @@ public class ElecStationServiceImpl implements ElecStationService {
     private final ObjectMapper objectMapper;
     private final FavoritesRepository favoritesRepository;
     private final UserRepository userRepository;
+    private final CommonResponseService commonResponseService;
     private static final List<ElectricStation> electricStations = new CopyOnWriteArrayList<>();
 
     @Override
-    public JsonNode getElecStation(String location) {
+    public List<ElectricStation> getElecStation(String location) {
+        // todo: 헬스체크 메서드 호출
+
         String url = BASE_URL + "?serviceKey=" + SERVICE_KEY + "&pageNo=1&numOfRows=10&addr=" + location;
         try {
-            // GET 요청을 보내고, 응답을 String으로 받음
             String response = restTemplate.getForObject(url, String.class);
+            JsonNode jsonResponse = objectMapper.readTree(response);
 
-            return objectMapper.readTree(response);
+            JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
+            electricStations.clear();
+
+            if (items.isArray()) {
+                electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
+                        .map(ElectricStation::of)
+                        .toList());
+
+                return electricStations;
+            } else {
+                throw new LocationException("잘못된 지역입니다");
+            }
         } catch (Exception e) {
             // 예외 처리 (필요에 따라 수정 가능)
-            return objectMapper.createObjectNode().put("error", "Failed to retrieve data");
-        }
-    }
-
-    public List<ElectricStation> getElectricStationsFromJson(JsonNode jsonResponse) {
-        // Navigate to the "item" array in the JSON response
-        JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
-        electricStations.clear();
-
-        if (items.isArray()) {
-            electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
-                    .map(ElectricStation::of)
-                    .toList());
-
-            return electricStations;
-        } else {
-            throw new IllegalStateException("Server Error");
+            throw new IllegalStateException("알 수 없는 에러가 발생하였습니다");
         }
     }
 
     @Override
     public List<ElectricStation> getElectricStationsByCsId(Long csId) {
+        validateStationId(csId);
+
         return electricStations.stream()
                 .filter(station -> station.getCsId().equals(csId))
                 .toList();

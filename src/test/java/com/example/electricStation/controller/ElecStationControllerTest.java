@@ -65,8 +65,7 @@ class ElecStationControllerTest {
         listResponse.setCode(200);
         listResponse.setDataList(stations);
 
-        given(elecStationService.getElecStation(anyString())).willReturn(JsonNodeFactory.instance.objectNode());  // Adjust if needed
-        given(elecStationService.getElectricStationsFromJson(any())).willReturn(stations);
+        given(elecStationService.getElecStation(anyString())).willReturn(stations);  // Adjust if needed
         given(commonResponseService.getListResponse(stations)).willReturn(listResponse);
 
         // when
@@ -136,5 +135,85 @@ class ElecStationControllerTest {
     @Test
     void detailsTestNegative() throws Exception {
 
+    }
+
+    @DisplayName("즐겨찾기 추가 - positive 케이스")
+    @Test
+    void setFavoriteTest() throws Exception {
+        // given
+        ElecStationResponseDto responseDto = ElecStationResponseDto.builder()
+                .csId(1L)
+                .addr("Street1")
+                .build();
+
+        given(elecStationService.setFavorite(anyLong(), anyString())).willReturn(responseDto);
+        SingleResponse<ElecStationResponseDto> singleResponse = new SingleResponse<>();
+        singleResponse.setCode(200);
+        singleResponse.setData(responseDto);
+        given(commonResponseService.getSingleResponse(responseDto)).willReturn(singleResponse);
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/v1/charging-stations/1/favorites")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.csId").value(1L))
+                .andExpect(jsonPath("$.data.addr").value("Street1"));
+    }
+
+    @Test
+    @DisplayName("즐겨찾기 추가 - negative 케이스")
+    void setFavoriteTestNegative() throws Exception {
+        // given
+        given(elecStationService.setFavorite(anyLong(), anyString()))
+                .willThrow(new NotFoundException("User Not Found"));
+
+        // when
+        ResultActions result = mockMvc.perform(post("/api/v1/charging-stations/1/favorites")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("즐겨찾기 삭제 - positive 케이스")
+    void removeFavoriteTestPositive() throws Exception {
+        // given
+        ElecStationResponseDto responseDto = ElecStationResponseDto.builder()
+                .csId(1L)
+                .addr("Some Address")
+                .build();
+
+        given(elecStationService.deleteFavorite(anyLong(), anyString())).willReturn(responseDto);
+        SingleResponse<ElecStationResponseDto> singleResponse = new SingleResponse<>();
+        singleResponse.setCode(200);
+        singleResponse.setData(responseDto);
+        given(commonResponseService.getSingleResponse(responseDto)).willReturn(singleResponse);
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/v1/charging-stations/1/favorites")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.csId").value(1L))
+                .andExpect(jsonPath("$.data.addr").value("Some Address"));
+    }
+
+    @Test
+    @DisplayName("즐겨찾기 삭제 - Negative 케이스")
+    void removeFavoriteNegativeTest() throws Exception {
+        // given
+        given(elecStationService.deleteFavorite(anyLong(), anyString())).willThrow(new NotFoundException("해당하는 즐겨찾기가 존재하지 않습니다."));
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/api/v1/charging-stations/1/favorites")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isNotFound());
     }
 }

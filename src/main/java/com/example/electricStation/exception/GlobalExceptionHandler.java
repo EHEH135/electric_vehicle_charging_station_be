@@ -25,4 +25,10 @@ public class GlobalExceptionHandler {
     public SingleResponse<String> handleNotFoundException(NotFoundException ex) {
         return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
     }
+
+    @ExceptionHandler(LocationException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public SingleResponse<String> handleLocationException(LocationException ex) {
+        return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    }
 }
