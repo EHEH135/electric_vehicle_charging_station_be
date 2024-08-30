@@ -1,10 +1,7 @@
-package com.example.electricStation.repository.impl;
+package com.example.electricStation.service.impl;
 
-import com.example.electricStation.common.CommonResponse;
 import com.example.electricStation.dto.ElectricStation;
-import com.example.electricStation.dto.SingleResponse;
-import com.example.electricStation.dto.ListResponse;
-import com.example.electricStation.repository.ElecStationService;
+import com.example.electricStation.service.ElecStationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.StreamSupport;
@@ -65,9 +59,15 @@ public class ElecStationServiceImpl implements ElecStationService {
     }
 
     public List<ElectricStation> getElectricStationsByCsId(Long csId) {
-        return electricStations.stream()
+        List<ElectricStation> filteredStations = electricStations.stream()
                 .filter(station -> station.getCsId().equals(csId))
                 .toList();
+
+        if (filteredStations.isEmpty()) {
+            throw new IllegalStateException("Server Error");
+        }
+
+        return filteredStations;
     }
 
 }

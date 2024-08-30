@@ -1,8 +1,6 @@
-package com.example.electricStation.repository;
+package com.example.electricStation.service;
 
 import com.example.electricStation.dto.ElectricStation;
-import com.example.electricStation.dto.SingleResponse;
-import com.example.electricStation.dto.ListResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
