@@ -32,20 +32,19 @@ public class CommonResponseService {
         return listResponse;
     }
 
-    public <T> ListResponse<T> getErrorResponse(List<T> dataList, String errorMsg) {
-        ListResponse<T> listResponse = new ListResponse<>();
-        listResponse.setDataList(dataList);
-        setErrorResponse(listResponse, errorMsg);
-
-        return listResponse;
+    public <T> SingleResponse<T> getSingleErrorResponse(String errorMessage, int code) {
+        SingleResponse<T> singleResponse = new SingleResponse<>();
+        setErrorResponse(singleResponse, errorMessage, code);
+        return singleResponse;
     }
 
     public void setSuccessResponse(CommonResponse commonResponse) {
         commonResponse.setCode(HttpStatus.OK.value());
     }
 
-    public void setErrorResponse(CommonResponse commonResponse, String errorMessage) {
+    public void setErrorResponse(CommonResponse commonResponse, String errorMessage, int code) {
         log.error("Error occurred: {}", errorMessage);
-        commonResponse.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        commonResponse.setCode(code);
+        commonResponse.setMessage(errorMessage);  // 에러 메시지 추가
     }
 }
