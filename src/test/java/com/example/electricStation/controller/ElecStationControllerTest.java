@@ -3,7 +3,7 @@ package com.example.electricStation.controller;
 import com.example.electricStation.common.CommonResponseService;
 import com.example.electricStation.dto.ElecStationResponseDto;
 import com.example.electricStation.dto.SingleResponse;
-import com.example.electricStation.exception.NotFoundException;
+import com.example.electricStation.exception.UserNotFoundException;
 import com.example.electricStation.service.ElecStationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class ElecStationControllerTest {
     void setFavoriteTestNegative() throws Exception {
         // given
         given(elecStationService.setFavorite(anyLong(), anyString()))
-                .willThrow(new NotFoundException("User Not Found"));
+                .willThrow(new UserNotFoundException("User Not Found"));
 
         // when
         ResultActions result = mockMvc.perform(post("/api/v1/charging-stations/1/favorites")
@@ -106,7 +106,7 @@ class ElecStationControllerTest {
     @DisplayName("즐겨찾기 삭제 - Negative 케이스")
     void removeFavoriteNegativeTest() throws Exception {
         // given
-        given(elecStationService.deleteFavorite(anyLong(), anyString())).willThrow(new NotFoundException("해당하는 즐겨찾기가 존재하지 않습니다."));
+        given(elecStationService.deleteFavorite(anyLong(), anyString())).willThrow(new UserNotFoundException("해당하는 즐겨찾기가 존재하지 않습니다."));
 
         // when
         ResultActions result = mockMvc.perform(delete("/api/v1/charging-stations/1/favorites")
