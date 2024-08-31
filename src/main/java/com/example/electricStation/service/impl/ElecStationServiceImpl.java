@@ -4,6 +4,7 @@ import com.example.electricStation.dto.ElecStationResponseDto;
 import com.example.electricStation.dto.ElectricStation;
 import com.example.electricStation.entity.Favorites;
 import com.example.electricStation.entity.User;
+import com.example.electricStation.exception.LocationException;
 import com.example.electricStation.exception.ApiServerException;
 import com.example.electricStation.exception.BookMarkNotFoundException;
 import com.example.electricStation.exception.ErrorMsg;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.StreamSupport;
@@ -39,37 +41,36 @@ public class ElecStationServiceImpl implements ElecStationService {
     private static final List<ElectricStation> electricStations = new CopyOnWriteArrayList<>();
 
     @Override
-    public JsonNode getElecStation(String location) {
+    public List<ElectricStation> getElecStation(String location) {
         healthCheck();
 
         String url = BASE_URL + "?serviceKey=" + SERVICE_KEY + "&pageNo=1&numOfRows=10&addr=" + location;
         try {
             String response = restTemplate.getForObject(url, String.class);
+            JsonNode jsonResponse = objectMapper.readTree(response);
 
-            return objectMapper.readTree(response);
+            JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
+            electricStations.clear();
+
+            if (items.isArray()) {
+                electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
+                        .map(ElectricStation::of)
+                        .toList());
+
+                return electricStations;
+            } else {
+                throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
+            }
         } catch (Exception e) {
-            return objectMapper.createObjectNode().put("error", "Failed to retrieve data");
-        }
-    }
-
-    public List<ElectricStation> getElectricStationsFromJson(JsonNode jsonResponse) {
-        // Navigate to the "item" array in the JSON response
-        JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
-        electricStations.clear();
-
-        if (items.isArray()) {
-            electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
-                    .map(ElectricStation::of)
-                    .toList());
-
-            return electricStations;
-        } else {
-            throw new IllegalStateException("Server Error");
+            // 예외 처리 (필요에 따라 수정 가능)
+            throw new IllegalStateException(ErrorMsg.JSON_PARSING_EXCEPTION);
         }
     }
 
     @Override
     public List<ElectricStation> getElectricStationsByCsId(Long csId) {
+        validateStationId(csId);
+
         return electricStations.stream()
                 .filter(station -> station.getCsId().equals(csId))
                 .toList();

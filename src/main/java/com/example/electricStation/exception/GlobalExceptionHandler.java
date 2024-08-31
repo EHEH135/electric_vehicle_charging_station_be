@@ -26,6 +26,12 @@ public class GlobalExceptionHandler {
         return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
     }
 
+    @ExceptionHandler(LocationException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public SingleResponse<String> handleLocationException(LocationException ex) {
+        return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    }
+
     @ExceptionHandler(ApiServerException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public SingleResponse<String> handleApiServerException(ApiServerException ex) {

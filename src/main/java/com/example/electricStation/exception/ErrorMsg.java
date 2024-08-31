@@ -6,4 +6,6 @@ public interface ErrorMsg {
     String USER_NOT_FOUND_EXCEPTION = "일치하는 유저가 존재하지 않습니다.";
     String STATION_NOT_FOUND_EXCEPTION = "일치하는 충전소가 존재하지 않습니다.";
     String BOOKMARK_NOT_FOUND_EXCEPTION = "일치하는 즐겨찾기가 존재하지 않습니다.";
+    String LOCATION_NOT_FOUND_EXCEPTION = "잘못된 지역입니다.";
+    String JSON_PARSING_EXCEPTION = "Json Parsing 중 에러가 발생하였습니다.";
 }

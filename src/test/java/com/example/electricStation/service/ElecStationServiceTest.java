@@ -32,8 +32,8 @@ class ElecStationServiceTest {
 
     @BeforeEach
     void setUp() {
-        JsonNode jsonNode = elecStationService.getElecStation("서울특별시 중구");
-        elecStationService.getElectricStationsFromJson(jsonNode);
+        elecStationService.getElecStation("서울특별시 중구");
+//        elecStationService.getElectricStationsFromJson(jsonNode);
     }
 
     @DisplayName("즐겨찾기 추가 - positive 케이스")
