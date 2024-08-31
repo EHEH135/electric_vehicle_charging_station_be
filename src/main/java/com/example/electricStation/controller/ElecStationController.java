@@ -6,7 +6,6 @@ import com.example.electricStation.dto.ElectricStation;
 import com.example.electricStation.dto.ListResponse;
 import com.example.electricStation.dto.SingleResponse;
 import com.example.electricStation.service.ElecStationService;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +37,11 @@ public class ElecStationController {
             location = "서울특별시 중구";
         }
         List<ElectricStation> electricStations = elecStationService.getElecStation(location);
-//        List<ElectricStation> electricStations = elecStationService.getElectricStationsFromJson(elecStation);
 
         return commonResponseService.getListResponse(electricStations);
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "전기차 충전소 상세 정보 조회", description = "사용자가 선택한 전기차 충전소의 상세 정보를 조회한다.")
     @GetMapping("/details")
     public ListResponse<ElectricStation> details(@RequestParam Long csId) {
         List<ElectricStation> stationDetails = elecStationService.getElectricStationsByCsId(csId);
