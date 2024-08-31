@@ -20,9 +20,9 @@ public class GlobalExceptionHandler {
         return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public SingleResponse<String> handleNotFoundException(NotFoundException ex) {
+    public SingleResponse<String> handleNotFoundException(UserNotFoundException ex) {
         return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
     }
 
@@ -30,5 +30,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public SingleResponse<String> handleLocationException(LocationException ex) {
         return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ExceptionHandler(ApiServerException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public SingleResponse<String> handleApiServerException(ApiServerException ex) {
+        return commonResponseService.getSingleErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

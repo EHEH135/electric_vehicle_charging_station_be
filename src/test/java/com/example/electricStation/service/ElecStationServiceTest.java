@@ -3,11 +3,12 @@ package com.example.electricStation.service;
 import com.example.electricStation.dto.ElecStationResponseDto;
 import com.example.electricStation.entity.Favorites;
 import com.example.electricStation.entity.User;
-import com.example.electricStation.exception.NotFoundException;
+import com.example.electricStation.exception.ErrorMsg;
+import com.example.electricStation.exception.StationNotFoundException;
+import com.example.electricStation.exception.UserNotFoundException;
 import com.example.electricStation.repository.FavoritesRepository;
 import com.example.electricStation.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,11 +65,11 @@ class ElecStationServiceTest {
         Long stationId = 14L;
 
         // when
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 elecStationService.setFavorite(stationId, userName));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("User Not Found");
+        assertThat(exception.getMessage()).isEqualTo(ErrorMsg.USER_NOT_FOUND_EXCEPTION);
     }
 
     @DisplayName("즐겨찾기 추가 - negative 케이스")
@@ -85,11 +86,11 @@ class ElecStationServiceTest {
         Long stationId = -1L;
 
         // when
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+        StationNotFoundException exception = assertThrows(StationNotFoundException.class, () ->
                 elecStationService.setFavorite(stationId, user.getUsername()));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("Station Not Found");
+        assertThat(exception.getMessage()).isEqualTo(ErrorMsg.STATION_NOT_FOUND_EXCEPTION);
     }
 
     @DisplayName("즐겨찾기 삭제 - positive 케이스")
@@ -142,11 +143,11 @@ class ElecStationServiceTest {
         favoritesRepository.save(favorites);
 
         // when
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 elecStationService.setFavorite(stationId, userName));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("User Not Found");
+        assertThat(exception.getMessage()).isEqualTo(ErrorMsg.USER_NOT_FOUND_EXCEPTION);
     }
 
     @DisplayName("즐겨찾기 삭제 - negative 케이스")
@@ -162,10 +163,10 @@ class ElecStationServiceTest {
         userRepository.save(user);
 
         // when
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+        StationNotFoundException exception = assertThrows(StationNotFoundException.class, () ->
                 elecStationService.setFavorite(stationId, user.getUsername()));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("Station Not Found");
+        assertThat(exception.getMessage()).isEqualTo(ErrorMsg.STATION_NOT_FOUND_EXCEPTION);
     }
 }
