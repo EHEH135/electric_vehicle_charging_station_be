@@ -67,4 +67,13 @@ public class ElecStationController {
 
         return commonResponseService.getSingleResponse(elecStationResponseDto);
     }
+
+    @Operation(summary = "충전소ID로 즐겨찾기 조회", description = "사용자가 저장한 즐겨찾기 충전소ID를 가져온다..")
+    @GetMapping("favorites")
+    public ListResponse<ElecStationResponseDto> getFavorite() {
+        // todo Principal 방식으로 현재 사용자 정보 가져오기
+        String userName = "userA";
+        List<ElecStationResponseDto> elecStationResponseDto = elecStationService.getFavorite(userName);
+        return commonResponseService.getListResponse(elecStationResponseDto);
+    }
 }

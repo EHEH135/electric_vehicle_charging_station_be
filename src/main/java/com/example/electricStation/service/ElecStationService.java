@@ -12,4 +12,5 @@ public interface ElecStationService {
     public List<ElectricStation> getElectricStationsByCsId(Long csId);
     ElecStationResponseDto setFavorite(Long stationId, String userName);
     ElecStationResponseDto deleteFavorite(Long stationId, String userName);
+    List<ElecStationResponseDto> getFavorite(String userName);
 }

@@ -121,6 +121,19 @@ public class ElecStationServiceImpl implements ElecStationService {
                 .build();
     }
 
+    @Override
+    public List<ElecStationResponseDto> getFavorite(String userName) {
+        User findUser = validateUser(userName);
+        List<Favorites> favoritesList = favoritesRepository.findFavoritesByUserId(findUser.getId());
+        return favoritesList.stream()
+                .map(favorite -> ElecStationResponseDto.builder()
+                        .csId(favorite.getStationId())
+                        .addr(favorite.getAddr())
+                        .build())
+                .toList();
+    }
+
+
     private ElectricStation validateStationId(Long stationId) {
         return electricStations.stream()
                 .filter(station -> station.getCsId().equals(stationId))
