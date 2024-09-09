@@ -1,10 +1,7 @@
 package com.example.electricStation.controller;
 
 import com.example.electricStation.common.CommonResponseService;
-import com.example.electricStation.dto.ElecStationResponseDto;
-import com.example.electricStation.dto.ElectricStation;
-import com.example.electricStation.dto.ListResponse;
-import com.example.electricStation.dto.SingleResponse;
+import com.example.electricStation.dto.*;
 import com.example.electricStation.service.ElecStationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,7 +65,7 @@ public class ElecStationController {
         return commonResponseService.getSingleResponse(elecStationResponseDto);
     }
 
-    @Operation(summary = "충전소ID로 즐겨찾기 조회", description = "사용자가 저장한 즐겨찾기 충전소ID를 가져온다..")
+    @Operation(summary = "즐겨찾기 조회", description = "사용자가 저장한 즐겨찾기 충전소ID를 가져온다..")
     @GetMapping("favorites")
     public ListResponse<ElecStationResponseDto> getFavorite() {
         // todo Principal 방식으로 현재 사용자 정보 가져오기
@@ -76,4 +73,13 @@ public class ElecStationController {
         List<ElecStationResponseDto> elecStationResponseDto = elecStationService.getFavorite(userName);
         return commonResponseService.getListResponse(elecStationResponseDto);
     }
+
+    @Operation(summary = "즐겨찾기 자세히 조회", description = "사용자가 저장한 즐겨찾기 충전소 자세한 정보를 가져온다..")
+    @GetMapping("favoritesDetails/{csId}")
+    public ListResponse<ElecStationDetailsResponseDto> getFavoriteDetails(@PathVariable Long csId, @RequestParam String location) {
+
+        List<ElecStationDetailsResponseDto> elecStationDetailsResponseDto = elecStationService.getFavoriteDetails(csId, location);
+        return commonResponseService.getListResponse(elecStationDetailsResponseDto);
+    }
+
 }

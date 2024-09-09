@@ -1,5 +1,6 @@
 package com.example.electricStation.service.impl;
 
+import com.example.electricStation.dto.ElecStationDetailsResponseDto;
 import com.example.electricStation.dto.ElecStationResponseDto;
 import com.example.electricStation.dto.ElectricStation;
 import com.example.electricStation.entity.Favorites;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.StreamSupport;
@@ -38,7 +40,7 @@ public class ElecStationServiceImpl implements ElecStationService {
     private final ObjectMapper objectMapper;
     private final FavoritesRepository favoritesRepository;
     private final UserRepository userRepository;
-    private static final List<ElectricStation> electricStations = new CopyOnWriteArrayList<>();
+    private static final List<ElectricStation> elecStationsDetailsResponseDto = new CopyOnWriteArrayList<>();
 
     @Override
     public List<ElectricStation> getElecStation(String location) {
@@ -50,14 +52,14 @@ public class ElecStationServiceImpl implements ElecStationService {
             JsonNode jsonResponse = objectMapper.readTree(response);
 
             JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
-            electricStations.clear();
+            elecStationsDetailsResponseDto.clear();
 
             if (items.isArray()) {
-                electricStations.addAll(StreamSupport.stream(items.spliterator(), false)
+                elecStationsDetailsResponseDto.addAll(StreamSupport.stream(items.spliterator(), false)
                         .map(ElectricStation::of)
                         .toList());
 
-                return electricStations;
+                return elecStationsDetailsResponseDto;
             } else {
                 throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
             }
@@ -71,7 +73,7 @@ public class ElecStationServiceImpl implements ElecStationService {
     public List<ElectricStation> getElectricStationsByCsId(Long csId) {
         validateStationId(csId);
 
-        return electricStations.stream()
+        return elecStationsDetailsResponseDto.stream()
                 .filter(station -> station.getCsId().equals(csId))
                 .toList();
     }
@@ -133,9 +135,37 @@ public class ElecStationServiceImpl implements ElecStationService {
                 .toList();
     }
 
+    @Override
+    public List<ElecStationDetailsResponseDto> getFavoriteDetails(Long stationId, String location) {
+        healthCheck();
+        List<ElecStationDetailsResponseDto> elecStationDetailsResponseDto = new ArrayList<>();
+
+        String url = BASE_URL + "?serviceKey=" + SERVICE_KEY + "&pageNo=1&numOfRows=10&addr=" + location;
+        try {
+            String response = restTemplate.getForObject(url, String.class);
+            JsonNode jsonResponse = objectMapper.readTree(response);
+
+            JsonNode items = jsonResponse.path("response").path("body").path("items").path("item");
+
+            if (items.isArray()) {
+                elecStationDetailsResponseDto.addAll(StreamSupport.stream(items.spliterator(), false)
+                        .map(ElecStationDetailsResponseDto::of)
+                        .filter(dto -> dto.isSameStationId(stationId))
+                        .toList());
+
+                return elecStationDetailsResponseDto;
+            } else {
+                throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
+            }
+        } catch (Exception e) {
+            // 예외 처리 (필요에 따라 수정 가능)
+            throw new IllegalStateException(ErrorMsg.JSON_PARSING_EXCEPTION);
+        }
+    }
+
 
     private ElectricStation validateStationId(Long stationId) {
-        return electricStations.stream()
+        return elecStationsDetailsResponseDto.stream()
                 .filter(station -> station.getCsId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new StationNotFoundException(ErrorMsg.STATION_NOT_FOUND_EXCEPTION));

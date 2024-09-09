@@ -1,16 +1,18 @@
 package com.example.electricStation.dto;
 
+import com.example.electricStation.exception.ErrorMsg;
+import com.example.electricStation.exception.StationNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Getter
 @Setter
-public class ElectricStation {
+public class ElecStationDetailsResponseDto {
     private String addr;          // 주소
     private Long chargeTp;         // 충전 타입 (1: 완속, 2: 급속)
     private Long cpId;             // 충전기 ID
@@ -24,9 +26,9 @@ public class ElectricStation {
     private LocalDateTime statUpdateDatetime; // 상태 업데이트 시간
 
     // Static factory method
-    public static ElectricStation of(JsonNode item) {
+    public static ElecStationDetailsResponseDto of(JsonNode item) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        ElectricStation station = new ElectricStation();
+        ElecStationDetailsResponseDto station = new ElecStationDetailsResponseDto();
         station.setAddr(item.path("addr").asText());
         station.setChargeTp(item.path("chargeTp").asLong());
         station.setCpId(item.path("cpId").asLong());
@@ -39,5 +41,9 @@ public class ElectricStation {
         station.setLongi(item.path("longi").asDouble());
         station.setStatUpdateDatetime(LocalDateTime.parse(item.path("statUpdateDatetime").asText(), formatter));
         return station;
+    }
+
+    public boolean isSameStationId(Long stationId) {
+        return Objects.equals(this.csId, stationId);
     }
 }
