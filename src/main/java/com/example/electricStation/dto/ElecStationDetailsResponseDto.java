@@ -3,6 +3,8 @@ package com.example.electricStation.dto;
 import com.example.electricStation.exception.ErrorMsg;
 import com.example.electricStation.exception.StationNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,8 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class ElecStationDetailsResponseDto {
     private String addr;          // 주소
     private Long chargeTp;         // 충전 타입 (1: 완속, 2: 급속)
@@ -28,19 +32,19 @@ public class ElecStationDetailsResponseDto {
     // Static factory method
     public static ElecStationDetailsResponseDto of(JsonNode item) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        ElecStationDetailsResponseDto station = new ElecStationDetailsResponseDto();
-        station.setAddr(item.path("addr").asText());
-        station.setChargeTp(item.path("chargeTp").asLong());
-        station.setCpId(item.path("cpId").asLong());
-        station.setCpNm(item.path("cpNm").asText());
-        station.setCpStat(item.path("cpStat").asLong());
-        station.setCpTp(item.path("cpTp").asLong());
-        station.setCsId(item.path("csId").asLong());
-        station.setCsNm(item.path("csNm").asText());
-        station.setLat(item.path("lat").asDouble());
-        station.setLongi(item.path("longi").asDouble());
-        station.setStatUpdateDatetime(LocalDateTime.parse(item.path("statUpdateDatetime").asText(), formatter));
-        return station;
+        return ElecStationDetailsResponseDto.builder()
+                .addr(item.path("addr").asText())
+                .chargeTp(item.path("chargeTp").asLong())
+                .cpId(item.path("cpId").asLong())
+                .cpNm(item.path("cpNm").asText())
+                .cpStat(item.path("cpStat").asLong())
+                .cpTp(item.path("cpTp").asLong())
+                .csId(item.path("csId").asLong())
+                .csNm(item.path("csNm").asText())
+                .lat(item.path("lat").asDouble())
+                .longi(item.path("longi").asDouble())
+                .statUpdateDatetime(LocalDateTime.parse(item.path("statUpdateDatetime").asText(), formatter))
+                .build();
     }
 
     public boolean isSameStationId(Long stationId) {

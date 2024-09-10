@@ -63,7 +63,11 @@ public class ElecStationServiceImpl implements ElecStationService {
             } else {
                 throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
             }
-        } catch (Exception e) {
+        }
+        catch (LocationException e) {
+            throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
+        }
+        catch (Exception e) {
             // 예외 처리 (필요에 따라 수정 가능)
             throw new IllegalStateException(ErrorMsg.JSON_PARSING_EXCEPTION);
         }
@@ -154,10 +158,15 @@ public class ElecStationServiceImpl implements ElecStationService {
                         .toList());
 
                 return elecStationDetailsResponseDto;
-            } else {
+            }
+            else {
                 throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
             }
-        } catch (Exception e) {
+        }
+        catch (LocationException e){
+            throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
+        }
+        catch (Exception e) {
             // 예외 처리 (필요에 따라 수정 가능)
             throw new IllegalStateException(ErrorMsg.JSON_PARSING_EXCEPTION);
         }
