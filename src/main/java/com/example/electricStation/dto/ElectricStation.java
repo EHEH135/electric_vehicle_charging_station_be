@@ -2,11 +2,14 @@ package com.example.electricStation.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Data
+@Getter
+@Setter
 public class ElectricStation {
     private String addr;          // 주소
     private Long chargeTp;         // 충전 타입 (1: 완속, 2: 급속)

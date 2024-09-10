@@ -1,13 +1,12 @@
 package com.example.electricStation.controller;
 
 import com.example.electricStation.common.CommonResponseService;
-import com.example.electricStation.dto.ElectricStation;
-import com.example.electricStation.dto.ListResponse;
+import com.example.electricStation.dto.*;
+import com.example.electricStation.exception.ErrorMsg;
+import com.example.electricStation.exception.LocationException;
 import com.example.electricStation.service.ElecStationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.example.electricStation.dto.ElecStationResponseDto;
-import com.example.electricStation.dto.SingleResponse;
 import com.example.electricStation.exception.UserNotFoundException;
 import com.example.electricStation.service.ElecStationService;
 import org.junit.jupiter.api.DisplayName;
@@ -216,4 +215,73 @@ class ElecStationControllerTest {
         // then
         result.andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("즐겨찾기 상세 정보 조회 - Positive 케이스")
+    void getFavoriteDetailsPositiveTest() throws Exception {
+        // given
+        Long stationId = 2947L;
+        String location = "서울특별시 중구 다동 85-4 한외빌딩 앞 노상주차장";
+
+        // Create station1 and station2 objects using builder pattern
+        ElecStationDetailsResponseDto station1 = ElecStationDetailsResponseDto.builder()
+                .addr("서울특별시 중구 남대문로 92 1층 주차장")
+                .cpId(811L)
+                .cpNm("급속01")
+                .csId(14L)
+                .csNm("서울직할")
+                .build();
+
+
+        ElecStationDetailsResponseDto station2 = ElecStationDetailsResponseDto.builder()
+                .addr("서울특별시 중구 남대문로 92 1층 주차장")
+                .cpId(6659L)
+                .cpNm("급속02")
+                .csId(14L)
+                .csNm("서울직할")
+                .build();
+
+        List<ElecStationDetailsResponseDto> stations = List.of(station1, station2);
+
+        ListResponse<ElecStationDetailsResponseDto> listResponse = new ListResponse<>();
+        listResponse.setCode(200);
+        listResponse.setDataList(stations);
+
+        given(elecStationService.getFavoriteDetails(anyLong(), anyString())).willReturn(stations);
+        given(commonResponseService.getListResponse(stations)).willReturn(listResponse);
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/v1/charging-stations/favoritesDetails/{stationId}", stationId)
+                .param("location", location)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.dataList[0].addr").value("서울특별시 중구 남대문로 92 1층 주차장"))
+                .andExpect(jsonPath("$.dataList[0].cpId").value(811))
+                .andExpect(jsonPath("$.dataList[0].cpNm").value("급속01"))
+                .andExpect(jsonPath("$.dataList[0].csId").value(14))
+                .andExpect(jsonPath("$.dataList[0].csNm").value("서울직할"));
+    }
+
+    @Test
+    @DisplayName("즐겨찾기 충전소 상세 정보 조회 - Negative 케이스")
+    void getFavoriteDetailsNegativeTest() throws Exception {
+        // given
+        Long stationId = 2947L;
+        String location = "미국";
+
+        given(elecStationService.getFavoriteDetails(stationId, location))
+                .willThrow(new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION));
+
+        // when
+        ResultActions result = mockMvc.perform(get("/api/v1/charging-stations/favoritesDetails/{stationId}", stationId)
+                .param("location", location)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isNotFound());
+    }
+
 }
