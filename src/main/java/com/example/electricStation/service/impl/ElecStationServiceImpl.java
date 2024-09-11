@@ -113,11 +113,10 @@ public class ElecStationServiceImpl implements ElecStationService {
 
     @Override
     public ElecStationResponseDto deleteFavorite(Long stationId, String userName) {
-        ElectricStation findStation = validateStationId(stationId);
-
         User findUser = validateUser(userName);
+
         Favorites findFavorites = validateFavorite(stationId, findUser);
-        if(findFavorites == null) {
+        if (findFavorites == null) {
             throw new BookMarkNotFoundException(ErrorMsg.BOOKMARK_NOT_FOUND_EXCEPTION);
         }
 
@@ -125,7 +124,7 @@ public class ElecStationServiceImpl implements ElecStationService {
 
         return ElecStationResponseDto.builder()
                 .csId(stationId)
-                .addr(findStation.getAddr())
+                .addr(findFavorites.getAddr())
                 .build();
     }
 
