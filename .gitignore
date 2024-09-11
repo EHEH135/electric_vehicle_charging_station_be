@@ -38,3 +38,6 @@ out/
 
 ### Api Key ###
 application-api.properties
+
+### OAuth ###
+application-oauth.properties

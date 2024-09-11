@@ -1,3 +1,3 @@
-INSERT INTO users(user_id, username, password, created_at, updated_at) VALUES (1, 'userA', 'encryptedPW1', now(), now());
-INSERT INTO users(user_id, username, password, created_at, updated_at) VALUES (2, 'userB', 'encryptedPW2', now(), now());
-INSERT INTO users(user_id, username, password, created_at, updated_at) VALUES (3, 'userC', 'encryptedPW3', now(), now());
+INSERT INTO users(id, email, nickname, password, created_at, updated_at)VALUES (100, 'test1@test.com', 'userA', 'encryptedPW1', now(), now());
+INSERT INTO users(id, email, nickname, password, created_at, updated_at) VALUES (101, 'test2@test.com', 'userB', 'encryptedPW2', now(), now());
+INSERT INTO users(id, email, nickname, password, created_at, updated_at) VALUES (102, 'test3@test.com', 'userC', 'encryptedPW3', now(), now());

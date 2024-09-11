@@ -189,8 +189,8 @@ public class ElecStationServiceImpl implements ElecStationService {
                 .orElse(null);
     }
 
-    private User validateUser(String userName) {
-        return userRepository.findByUsername(userName)
+    private User validateUser(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMsg.USER_NOT_FOUND_EXCEPTION));
     }
 
