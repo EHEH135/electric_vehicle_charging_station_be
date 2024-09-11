@@ -59,16 +59,18 @@ public class ElecStationServiceImpl implements ElecStationService {
                         .map(ElectricStation::of)
                         .toList());
 
-                return elecStationsDetailsResponseDto;
+            } else if (items.isObject()) { // items가 단일 객체일 경우 처리
+                elecStationsDetailsResponseDto.add(ElectricStation.of(items));
             } else {
                 throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
             }
+
+            return elecStationsDetailsResponseDto;
         }
         catch (LocationException e) {
             throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
         }
         catch (Exception e) {
-            // 예외 처리 (필요에 따라 수정 가능)
             throw new IllegalStateException(ErrorMsg.JSON_PARSING_EXCEPTION);
         }
     }
@@ -156,12 +158,15 @@ public class ElecStationServiceImpl implements ElecStationService {
                         .map(ElecStationDetailsResponseDto::of)
                         .filter(dto -> dto.isSameStationId(stationId))
                         .toList());
-
-                return elecStationDetailsResponseDto;
+            }
+            else if (items.isObject()) { // items가 단일 객체일 경우 처리
+                elecStationsDetailsResponseDto.add(ElectricStation.of(items));
             }
             else {
                 throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
             }
+
+            return elecStationDetailsResponseDto;
         }
         catch (LocationException e){
             throw new LocationException(ErrorMsg.LOCATION_NOT_FOUND_EXCEPTION);
