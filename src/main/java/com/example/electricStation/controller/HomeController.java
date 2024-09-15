@@ -11,4 +11,9 @@ public class HomeController {
     public String loginController() {
         return "oauthLogin";
     }
+
+    @GetMapping("/articles")
+    public String articlesController() {
+        return "article";
+    }
 }
