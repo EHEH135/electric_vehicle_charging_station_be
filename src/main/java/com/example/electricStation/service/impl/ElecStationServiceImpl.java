@@ -130,6 +130,7 @@ public class ElecStationServiceImpl implements ElecStationService {
 
     @Override
     public List<ElecStationResponseDto> getFavorite(String userName) {
+        System.out.println("userName : " + userName);
         User findUser = validateUser(userName);
         List<Favorites> favoritesList = favoritesRepository.findFavoritesByUserId(findUser.getId());
         return favoritesList.stream()
