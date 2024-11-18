@@ -50,6 +50,7 @@ public class WebOAuthSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+                .cors().and()
                 .headers(authorize -> authorize
                         .frameOptions().disable())
                 .csrf(AbstractHttpConfigurer::disable)
