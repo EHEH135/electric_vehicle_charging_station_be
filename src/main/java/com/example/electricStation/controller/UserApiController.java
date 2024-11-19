@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Controller
@@ -26,6 +27,9 @@ public class UserApiController {
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response,
                 SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/login";
+
+        return UriComponentsBuilder.fromUriString("http://localhost:3000/login")
+                .build()
+                .toUriString();
     }
 }
