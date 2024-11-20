@@ -1,6 +1,8 @@
 package com.example.electricStation.controller;
 
+import com.example.electricStation.common.CommonResponseService;
 import com.example.electricStation.dto.AddUserRequestDto;
+import com.example.electricStation.dto.SingleResponse;
 import com.example.electricStation.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +17,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 @Controller
 public class UserApiController {
+
     private final UserService userService;
+    private final CommonResponseService commonResponseService;
 
     @PostMapping("/user")
     public String signup(AddUserRequestDto request) {
@@ -24,12 +28,10 @@ public class UserApiController {
     }
 
     @GetMapping("/api/v1/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
+    public SingleResponse<String> logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response,
                 SecurityContextHolder.getContext().getAuthentication());
 
-        return UriComponentsBuilder.fromUriString("http://localhost:3000/login")
-                .build()
-                .toUriString();
+        return commonResponseService.getSingleResponse("Logout Success");
     }
 }
