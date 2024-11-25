@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -85,7 +86,8 @@ public class ElecStationServiceImpl implements ElecStationService {
     }
 
     @Override
-    public ElecStationResponseDto setFavorite(Long stationId, String userName) {
+    public ElecStationResponseDto setFavorite(Long stationId) {
+        String userName = getUserName();
         ElectricStation findStation = validateStationId(stationId);
 
         User findUser = validateUser(userName);
@@ -112,7 +114,8 @@ public class ElecStationServiceImpl implements ElecStationService {
     }
 
     @Override
-    public ElecStationResponseDto deleteFavorite(Long stationId, String userName) {
+    public ElecStationResponseDto deleteFavorite(Long stationId) {
+        String userName = getUserName();
         User findUser = validateUser(userName);
 
         Favorites findFavorites = validateFavorite(stationId, findUser);
@@ -129,7 +132,8 @@ public class ElecStationServiceImpl implements ElecStationService {
     }
 
     @Override
-    public List<ElecStationResponseDto> getFavorite(String userName) {
+    public List<ElecStationResponseDto> getFavorite() {
+        String userName = getUserName();
         User findUser = validateUser(userName);
         List<Favorites> favoritesList = favoritesRepository.findFavoritesByUserId(findUser.getId());
         return favoritesList.stream()
@@ -189,8 +193,8 @@ public class ElecStationServiceImpl implements ElecStationService {
                 .orElse(null);
     }
 
-    private User validateUser(String userName) {
-        return userRepository.findByUsername(userName)
+    private User validateUser(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMsg.USER_NOT_FOUND_EXCEPTION));
     }
 
@@ -207,5 +211,12 @@ public class ElecStationServiceImpl implements ElecStationService {
         } catch (Exception e) {
             throw new ApiServerException(ErrorMsg.API_SERVER_EXCEPTION);
         }
+    }
+
+    public static String getUserName() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("name = " + name);
+
+        return name;
     }
 }

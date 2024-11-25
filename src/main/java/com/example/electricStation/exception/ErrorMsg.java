@@ -8,4 +8,5 @@ public interface ErrorMsg {
     String BOOKMARK_NOT_FOUND_EXCEPTION = "일치하는 즐겨찾기가 존재하지 않습니다.";
     String LOCATION_NOT_FOUND_EXCEPTION = "잘못된 지역입니다.";
     String JSON_PARSING_EXCEPTION = "Json Parsing 중 에러가 발생하였습니다.";
+    String INTERNAL_SERVER_EXCEPTION = "Internal Server Error가 발생했습니다";
 }

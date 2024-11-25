@@ -48,9 +48,7 @@ public class ElecStationController {
     @Operation(summary = "충전소ID로 즐겨찾기 등록", description = "사용자로부터 전달받은 충전소ID로 즐겨찾기에 등록한다.")
     @PostMapping("/{stationId}/favorites")
     public SingleResponse<ElecStationResponseDto> setFavorite(@PathVariable Long stationId) {
-        // todo Principal 방식으로 현재 사용자 정보 가져오기
-        String userName = "userA";
-        ElecStationResponseDto elecStationResponseDto = elecStationService.setFavorite(stationId, userName);
+        ElecStationResponseDto elecStationResponseDto = elecStationService.setFavorite(stationId);
 
         return commonResponseService.getSingleResponse(elecStationResponseDto);
     }
@@ -58,9 +56,7 @@ public class ElecStationController {
     @Operation(summary = "충전소ID로 즐겨찾기 삭제", description = "사용자로부터 전달받은 충전소ID로 즐겨찾기에 등록한다.")
     @DeleteMapping("/{stationId}/favorites")
     public SingleResponse<ElecStationResponseDto> removeFavorite(@PathVariable Long stationId) {
-        // todo Principal 방식으로 현재 사용자 정보 가져오기
-        String userName = "userA";
-        ElecStationResponseDto elecStationResponseDto = elecStationService.deleteFavorite(stationId, userName);
+        ElecStationResponseDto elecStationResponseDto = elecStationService.deleteFavorite(stationId);
 
         return commonResponseService.getSingleResponse(elecStationResponseDto);
     }
@@ -68,9 +64,7 @@ public class ElecStationController {
     @Operation(summary = "즐겨찾기 조회", description = "사용자가 저장한 즐겨찾기 충전소ID를 가져온다..")
     @GetMapping("favorites")
     public ListResponse<ElecStationResponseDto> getFavorite() {
-        // todo Principal 방식으로 현재 사용자 정보 가져오기
-        String userName = "userA";
-        List<ElecStationResponseDto> elecStationResponseDto = elecStationService.getFavorite(userName);
+        List<ElecStationResponseDto> elecStationResponseDto = elecStationService.getFavorite();
         return commonResponseService.getListResponse(elecStationResponseDto);
     }
 

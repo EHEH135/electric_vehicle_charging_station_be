@@ -2,7 +2,6 @@ package com.example.electricStation.service;
 
 import com.example.electricStation.dto.ElecStationDetailsResponseDto;
 import com.example.electricStation.dto.ElecStationResponseDto;
-import com.example.electricStation.dto.ListResponse;
 import com.example.electricStation.entity.Favorites;
 import com.example.electricStation.entity.User;
 import com.example.electricStation.exception.ErrorMsg;
@@ -11,7 +10,6 @@ import com.example.electricStation.exception.StationNotFoundException;
 import com.example.electricStation.exception.UserNotFoundException;
 import com.example.electricStation.repository.FavoritesRepository;
 import com.example.electricStation.repository.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -40,7 +36,7 @@ class ElecStationServiceTest {
     @BeforeEach
     void setUp() {
         elecStationService.getElecStation("서울특별시 중구");
-//        elecStationService.getElectricStationsFromJson(jsonNode);
+        userRepository.deleteAll();
     }
 
     @DisplayName("즐겨찾기 추가 - positive 케이스")
@@ -48,8 +44,8 @@ class ElecStationServiceTest {
     void setFavorite() throws Exception {
         // given
         User user = User.builder()
-                .id(1L)
-                .username("userA")
+                .email("test@test.com")
+                .nickname("testUser")
                 .password("123456")
                 .build();
         userRepository.save(user);
@@ -57,7 +53,7 @@ class ElecStationServiceTest {
         Long stationId = 14L;
 
         // when
-        ElecStationResponseDto elecStationResponseDto = elecStationService.setFavorite(stationId, user.getUsername());
+        ElecStationResponseDto elecStationResponseDto = elecStationService.setFavorite(stationId, user.getNickname());
 
         // then
         assertThat(elecStationResponseDto.getCsId()).isEqualTo(stationId);
@@ -84,8 +80,8 @@ class ElecStationServiceTest {
     void 존재하지_않는_주유소로_추가() throws Exception {
         // given
         User user = User.builder()
-                .id(1L)
-                .username("userA")
+                .email("test@test.com")
+                .nickname("testUser")
                 .password("123456")
                 .build();
         userRepository.save(user);
@@ -94,7 +90,7 @@ class ElecStationServiceTest {
 
         // when
         StationNotFoundException exception = assertThrows(StationNotFoundException.class, () ->
-                elecStationService.setFavorite(stationId, user.getUsername()));
+                elecStationService.setFavorite(stationId, user.getNickname()));
 
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorMsg.STATION_NOT_FOUND_EXCEPTION);
@@ -106,8 +102,8 @@ class ElecStationServiceTest {
         // given
         Long stationId = 14L;
         User user = User.builder()
-                .id(1L)
-                .username("userA")
+                .email("test@test.com")
+                .nickname("testUser")
                 .password("123456")
                 .build();
         userRepository.save(user);
@@ -121,7 +117,7 @@ class ElecStationServiceTest {
         favoritesRepository.save(favorites);
 
         // when
-        ElecStationResponseDto elecStationResponseDto = elecStationService.deleteFavorite(stationId, user.getUsername());
+        ElecStationResponseDto elecStationResponseDto = elecStationService.deleteFavorite(stationId, user.getNickname());
 
         // then
         assertThat(elecStationResponseDto.getCsId()).isEqualTo(stationId);
@@ -135,8 +131,8 @@ class ElecStationServiceTest {
         Long stationId = 14L;
         String userName = "dummyUser";
         User user = User.builder()
-                .id(1L)
-                .username("userA")
+                .email("test@test.com")
+                .nickname("testUser")
                 .password("123456")
                 .build();
         userRepository.save(user);
@@ -163,15 +159,15 @@ class ElecStationServiceTest {
         // given
         Long stationId = -1L;
         User user = User.builder()
-                .id(1L)
-                .username("userA")
+                .email("test@test.com")
+                .nickname("testUser")
                 .password("123456")
                 .build();
         userRepository.save(user);
 
         // when
         StationNotFoundException exception = assertThrows(StationNotFoundException.class, () ->
-                elecStationService.setFavorite(stationId, user.getUsername()));
+                elecStationService.setFavorite(stationId, user.getNickname()));
 
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorMsg.STATION_NOT_FOUND_EXCEPTION);
@@ -183,8 +179,8 @@ class ElecStationServiceTest {
         // given
         Long stationId = 14L;
         User user = User.builder()
-                .id(1L)
-                .username("userA")
+                .email("test@test.com")
+                .nickname("testUser")
                 .password("123456")
                 .build();
         userRepository.save(user);
