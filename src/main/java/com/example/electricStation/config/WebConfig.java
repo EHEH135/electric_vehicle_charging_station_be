@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("http://172.31.3.29:3000") // React 앱이 실행되는 포트 localhost
+                .allowedOrigins("http://43.203.202.121:3000") // React 앱이 실행되는 포트 localhost
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
